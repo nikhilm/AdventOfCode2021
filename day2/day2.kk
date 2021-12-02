@@ -36,13 +36,7 @@ this will fail, preventing some refactoring of the block below.
     whitespace()
     ctor(pnat())
 */
-fun sub-line-parser() {
-    val ins-fun = fn(s: string) {
-        // the "parser" (just a function that has a parse effect)
-        fn() { pstring(s) }
-    }
-    val instruction = fn() { choose([ins-fun("forward"), ins-fun("down"), ins-fun("up")]) }
-
+fun sub-line-parser() : parse movement {
     choose([
         {
             pstring("forward")
@@ -62,7 +56,10 @@ fun sub-line-parser() {
     ])
 }
 
-fun interpret(s: string, on-movement) {
+// Blog note: Turns out the _ before the effect name has meaning.
+// It seems like without it, interpret's return type will change to somehow encapsulate e and start failing
+// With it, the compiler seems to understand we don't care what effect it is and discards it.
+fun interpret(s: string, on-movement: (movement) -> _e ()) : _e1 () {
     val lines = lines(s)
     foreach-indexed(lines, fn(lineno, line) {
         // skip EOF at end of file
@@ -77,7 +74,7 @@ fun interpret(s: string, on-movement) {
     ()
 }
 
-fun interpret1(s: string) {
+fun interpret1(s: string) : _ (int, int) {
     val horiz = ref(0)
     val depth = ref(0)
     val on-movement = fn(m: movement) {
@@ -91,7 +88,7 @@ fun interpret1(s: string) {
     (!horiz, !depth)
 }
 
-fun interpret2(s: string) {
+fun interpret2(s: string) : _ (int, int) {
     val horiz = ref(0)
     val depth = ref(0)
     val aim = ref(0)
@@ -113,7 +110,7 @@ forward 8
 up 3
 down 8
 forward 2")
-    h * d
+    assert("test 1 failed: h=" ++ h.show ++ " d=" ++ d.show, h * d == 150)
 }
 
 fun test2() {
@@ -123,14 +120,12 @@ forward 8
 up 3
 down 8
 forward 2")
-    h * d
+    assert("test 2 failed: h=" ++ h.show ++ " d=" ++ d.show, h * d == 900)
 }
 
 fun main() {
-    print("Test 1: ")
-    println(test1())
-    print("Test 2: ")
-    println(test2())
+    test1()
+    test2()
 
     val input = read-text-file(path("input.txt"))
     val (h, d) = interpret1(input)
