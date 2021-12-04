@@ -79,7 +79,6 @@ fun to-decimal(number: vector<char>) : int {
 }
 
 fun calculate-rating(numbers: list<vector<char>>, bit_pos: int, k: keeper) : <div|_e> int {
-    println("BIT " ++ bit_pos.show)
     // length might be O(n), but shouldn't matter for our purposes.
     if length(numbers) == 1 then {
         return match head(numbers) {
@@ -108,7 +107,7 @@ fun calculate-rating(numbers: list<vector<char>>, bit_pos: int, k: keeper) : <di
 }
 
 fun life-support(input: string) : _e (int, int) {
-    val lines = lines(input)
+    val lines = filter(lines(input), fn(s) { s != "" })
     val initial_numbers = map(lines, fn(line) { vector(list(line)) })
     // Ok now we need to start some recursive, state maintaining function, that as its base case should yield the rating.
     val o = calculate-rating(initial_numbers, 0, More)
@@ -157,5 +156,5 @@ fun main() {
     println("gamma: " ++ g.show ++ " epsilon: " ++ e.show ++ " product: " ++ (g * e).show)
 
     val (o, co) = life-support(input)
-    ()
+    println("o: " ++ o.show ++ " co: " ++ co.show ++ " product: " ++ (o * co).show)
 }
